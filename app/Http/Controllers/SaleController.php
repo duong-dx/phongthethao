@@ -82,17 +82,19 @@ class SaleController extends Controller
         }
 
         if($product->thumbnail!=null){
-            Cart::instance('admin')->add(['id' => $product->id, 'name' => $product->name, 'qty' => $request->quantity_buy, 'price' => ($product->price -($product->price*$product->sale)/100 ), 'options' => ['thumbnail'=>$product->thumbnail, 'price'=>$product->price]]);
+            Cart::instance('admin')->add(['id' => $product->id, 'name' => $product->name, 'qty' => $request->quantity_buy, 'price' => ($product->price -($product->price*$product->sale)/100 ), 'options' => ['thumbnail'=>$product->thumbnail, 'price'=>$product->price, 'sale'=>$product->sale]]);
         }
         else{
-            Cart::instance('admin')->add(['id' => $product->id, 'name' => $product->name, 'qty' => $request->quantity_buy, 'price' => ($product->price -($product->price*$product->sale)/100 ), 'options' => ['thumbnail'=>'default_image.png', 'price'=>$product->price]]);
+            Cart::instance('admin')->add(['id' => $product->id, 'name' => $product->name, 'qty' => $request->quantity_buy, 'price' => ($product->price -($product->price*$product->sale)/100 ), 'options' => ['thumbnail'=>'default_image.png', 'price'=>$product->price, 'sale'=>$product->sale]]);
         }
         
         $count = Cart::instance('admin')->count();
+        $subtotal = Cart::instance('admin')->subtotal();
         return response()->json([
                 'error'=>false,
                 'messages'=>'Add to cart success !',
                 'count'=>$count,
+                'subtotal'=>$subtotal,
         ]);
 
 
@@ -151,18 +153,18 @@ class SaleController extends Controller
             ->select('detail_orders.*')
             ->where('orders.status', '!=', 3)
             ->where('orders.status', '!=', 4)
-            ->where('detail_orders.detail_product_id',$cart->id)
+            ->where('detail_orders.product_id',$cart->id)
             ->get();
             
             foreach ($detail_orders as $key => $detail_order) {
                 $sum +=$detail_order->quantity_buy;
             }
 
-        $detail_product = DetailProduct::find($cart->id);
-        $detail_product->quantity= ($detail_product->quantity-$sum);
+        $product = Product::find($cart->id);
+        $product->quantity= ($product->quantity-$sum);
 
        
-        return response()->json(['cart'=>$cart, 'detail_product'=>$detail_product]);
+        return response()->json(['cart'=>$cart, 'product'=>$product]);
     }
 
     /**
@@ -174,7 +176,7 @@ class SaleController extends Controller
      */
     public function update(SaleRequest $request, $id)
     {
-        $detail_product= DetailProduct::find($request->detail_product_id);
+        $product= Product::find($request->product_id);
         $cart= Cart::instance('admin')->get($id);
 //check số lượng trừ đi số lượng đang order
          $sum=0;
@@ -182,14 +184,14 @@ class SaleController extends Controller
             ->select('detail_orders.*')
             ->where('orders.status', '!=', 3)
             ->where('orders.status', '!=', 4)
-            ->where('detail_orders.detail_product_id',$request->detail_product_id)
+            ->where('detail_orders.product_id',$request->product_id)
             ->get();
             
             foreach ($detail_orders as $key => $detail_order) {
                 $sum +=$detail_order->quantity_buy;
             }
 
-        if($request->quantity_buy>($detail_product->quantity-$sum)){
+        if($request->quantity_buy>($product->quantity-$sum)){
             return response()->json([
                 'error'=>true,
                 'messages'=>'Số lượng bạn cần mua lớn hơn số lượng cửa hàng hiện có !'
@@ -197,10 +199,11 @@ class SaleController extends Controller
         }
 
         Cart::instance('admin')->update($id, $request->quantity_buy);
-        
+         $subtotal = Cart::instance('admin')->subtotal();
         return response()->json([
                 'error'=>false,
                 'messages'=>'Update cart success !',
+                'subtotal'=>$subtotal,
         ]);
     }
 
@@ -213,13 +216,21 @@ class SaleController extends Controller
     public function destroy($id)
     {
         Cart::instance('admin')->remove($id);
+         $subtotal = Cart::instance('admin')->subtotal();
+        return $subtotal;
     }
+    // xóa toàn bộ giỏi hàng
     public function delete(){
         
         Cart::instance('admin')->destroy();
 
        
     }
+    public function getSubtotalCart(){
+        $subtotal = Cart::instance('admin')->subtotal();
+        return $subtotal;
+    }
+
     public function getCart()
     {
         $cart= Cart::instance('admin')->content();
@@ -243,13 +254,13 @@ class SaleController extends Controller
        ->editColumn('sale_price',function($cart){
                 return ''.number_format($cart->price).' VNĐ';
                 })
-       // ->editColumn('total',function($cart){
-       //          return ''.number_format($cart->price*$cart->qty).'';
-       //          })
+       ->editColumn('sale',function($cart){
+                return '<p style="color:green">Giảm giá: '.$cart->options->sale.' %</p>';
+                })
         ->editColumn('thumbnail',function($cart){
                 return '<img style="margin:auto; width:60px; height:60px;" src ="/storage/'.$cart->options->thumbnail->thumbnail.'">';
                 })
-        ->rawColumns(['action','product_name', 'sale_price', 'quantity_buy', 'thumbnail'])
+        ->rawColumns(['action','product_name', 'sale_price', 'quantity_buy', 'thumbnail', 'sale'])
         ->toJson();
     }
 }

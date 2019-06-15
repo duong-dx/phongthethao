@@ -33,10 +33,18 @@ $(function(){
                 { data: 'thumbnail', name: 'thumbnail' },
                 { data: 'quantity_buy', name: 'quantity_buy' },
                 { data: 'sale_price', name: 'sale_price' },
-                // { data: 'total', name: 'total' },
+                { data: 'sale', name: 'sale' },
                 { data: 'action', name: 'action' },
             ]
         });
+        $.ajax({
+            type:'get',
+            url:'/admin/subtotal',
+            success: function(response){
+                console.log(response);
+                $('#subtotalCart').html(response);
+            }
+        })
 
     })
 
@@ -81,8 +89,8 @@ $(function(){
                 else{
                  toastr.success(reponse.messages); 
                  $('#modal-add_to_cart').modal('hide');
-                 $('#modal-detail_products').modal('show');
                  $('#quantity_buy').val(''); 
+                $('#subtotalCart').html(reponse.subtotal);
 
                 }
             },
@@ -110,10 +118,10 @@ $(function(){
             url:'/admin/sales/'+rowId+'/edit',
             success: function(reponse){
                 $('#quantity_buy_update').val(reponse.cart.qty);
-                quantity=reponse.detail_product.quantity;
+                quantity=reponse.product.quantity;
                 $('#quantity_remaining_update').html(quantity);
                 $('#rowId').val(reponse.cart.rowId);
-                $('#detail_product_id_update').val(reponse.detail_product.id);
+                $('#product_id_update').val(reponse.product.id);
 
                 $('#quantity_buy_update').keyup(function(){
                     if($(this).val()>quantity){
@@ -146,6 +154,7 @@ $(function(){
                  $('#cart-table').DataTable().ajax.reload();
                  $('#error_messages').children().remove();
                  $('#modal-cart').modal('show');
+                 $('#subtotalCart').html(reponse.subtotal);
                 }
             },
             error: function(jq,status,throwE){
@@ -157,7 +166,7 @@ $(function(){
         })
     })
 
-
+    // xóa sản phẩm khỏi giỏ hàng
     $(document).on('click','.btn-delete',function(){
         var id = $(this).data('id');
 
@@ -175,7 +184,7 @@ $(function(){
                     type:'delete',
                     url:'/admin/sales/'+id,
                     success : function(reponse){
-                        
+                        $('#subtotalCart').html(reponse);
                      toastr.success('Delete success!');
                     $('#cart-table').DataTable().ajax.reload();
 

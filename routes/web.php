@@ -177,6 +177,7 @@ Route::prefix('admin')->group(function(){
                Route::resource('sales','SaleController');
                Route::get('/getCart','SaleController@getCart');
                Route::delete('/delete','SaleController@delete');
+               Route::get('/subtotal','SaleController@getSubtotalCart');
 
                // orders
                Route::resource('orders','OrderController');

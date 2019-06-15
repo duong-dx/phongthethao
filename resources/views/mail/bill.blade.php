@@ -11,7 +11,7 @@
 								<h3 style="margin: 2% auto 2%;">Hóa Đơn Bán Hàng</h3>
 							</div>
 							<p >Mã hóa đơn:<span style="margin: 2%;">{{ $order->code }}</span></p>
-							<p>Bạn có thể truy câp : royalshop.local để kiểm tra trạng thái hóa đơn</p>
+							<p>Bạn có thể truy câp : phamtuananh.com để kiểm tra trạng thái hóa đơn</p>
 							<p >Tên khách hàng:<span style="margin: 2%;"id="customer_name">{{ $order->customer_name }}</span></p>
 							<p >Số điện thoại:<span style="margin: 2%;"id="customer_mobile">{{ $order->customer_mobile }}</span></p>
 							<p >Địa chỉ :<span style="margin: 2%;"id="customer_address">{{ $order->customer_address }}</span></p>
@@ -23,8 +23,6 @@
 									<thead >
 										
 											<th>Product name</th>
-											<th>Memory</th>
-											<th>Color name</th>
 											<th>Price Sale</th>
 											<th>Quantity</th>
 											<th>Total</th>
@@ -34,8 +32,6 @@
 										@foreach($carts as $cart)
 											<tr>
 												<td>{{ $cart->name }}</td>
-												<td>{{ $cart->options->memory }}</td>
-												<td>{{ $cart->options->color }}</td>
 												<td>{{ number_format($cart->price) }}</td>
 												<td>{{ $cart->qty }}</td>
 												<td>{{ number_format($cart->qty*$cart->price) }}

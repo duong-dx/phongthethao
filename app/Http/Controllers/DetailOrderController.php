@@ -86,11 +86,8 @@ class DetailOrderController extends Controller
     {
        $detail_order = DB::table('detail_orders as do')
         ->join('orders as o', 'o.id', '=', 'do.order_id')
-        ->join('detail_products as dp', 'dp.id', '=', 'do.detail_product_id')
-        ->join('memories as m', 'm.id', '=', 'dp.memory')
-        ->join('colors as c', 'c.id', '=', 'dp.color_id')
-        ->join('products as p', 'p.id', '=', 'dp.product_id')
-        ->select('do.*', 'o.*','p.name as product_name', 'p.id as product_id', 'm.name as memory', 'c.name as color_name')
+        ->join('products as p', 'p.id', '=', 'do.product_id')
+        ->select('do.*', 'o.*','p.name as product_name', 'p.id as product_id')
         ->where('o.id', $id)
         ->get();
         foreach ($detail_order as $key => $value) {
@@ -104,10 +101,10 @@ class DetailOrderController extends Controller
                  return '<img style="margin:auto; width:60px; height:60px;" src ="/storage/'.$detail_order->thumbnail.'">';
         })
          ->editColumn('sale_price', function($detail_order){
-            return ''.number_format($detail_order->sale_price).'';
+            return ''.number_format($detail_order->sale_price).' VNĐ';
        })
        ->editColumn('total', function($detail_order){
-            return ''.number_format($detail_order->sale_price*$detail_order->quantity_buy).'';
+            return ''.number_format($detail_order->sale_price*$detail_order->quantity_buy).'  VNĐ';
        })
         ->rawColumns(['action', 'total', 'thumbnail', 'sale_price'])
         ->toJson();

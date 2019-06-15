@@ -64,8 +64,8 @@
 				</div>
 				<div class="modal-body">
 					<div style="text-align: center;" id="error_messages"></div>
-					<div style="margin: auto; text-align: center; width: 90%;">
-						<table class="table" id="cart-table">
+					<div style="margin: auto; text-align: center; width: 100%;">
+						<table style="width: 100%;" class="table" id="cart-table">
 							<thead >
 								<tr>
 									<th>Id</th>
@@ -73,7 +73,7 @@
 									<th>Thumbnail</th>
 									<th>Quantity Buy</th>
 									<th>Price Sale</th>
-									{{-- <th>Total</th> --}}
+									<th>Sale</th>
 									<th>Action</th>
 								</tr>
 							</thead>
@@ -82,7 +82,7 @@
 
 				</div>
 				<div class="clear"></div>
-				<h4 id="total_carts" style="margin-left: 5%;margin-top: 1% ; margin-bottom: 1%;">Tổng tiền thanh toán : {{ Cart::instance('admin')->subtotal() }} VNĐ</h4>
+				<h4 id="total_carts" style="margin-left: 5%;margin-top: 1% ; margin-bottom: 1%;">Tổng tiền thanh toán : <span id="subtotalCart">{{ Cart::instance('admin')->subtotal() }}</span> VNĐ</h4>
 				<div style="float: left; width: 50%; text-align: center;">
 				<a href="javascript:;" id="btn-delete_cart" class="btn btn-danger"><i class="fas fa-trash"></i>&nbsp&nbspDestroy Cart </a>
 				</div>
@@ -110,7 +110,7 @@
 					<div class="modal-body">
 						<div class="form-group">
 							<input type="hidden" readonly name="rowId" id="rowId">
-							<input type="hidden" readonly name="detail_product_id" id="detail_product_id_update">
+							<input type="hidden" readonly name="product_id" id="product_id_update">
 								<label for="">* Số lượng mua</label>
 								<input type="number"  class="form-control" name="quantity_buy" id="quantity_buy_update" placeholder="Cập nhật số lượng mua">
 								<span id="span_quantity_buy_update"></span>
@@ -164,7 +164,7 @@
 								<input type="text"  class="form-control" name="customer_email" id="customer_email" placeholder="Nhập vào mã khách hàng">
 								<span id="span_customer_email"></span>
 						</div>
-						<input type="hidden" readonly name="user_id" value="{{ Auth::user()->id }}">
+						
 					</div>
 					<div class="clear"></div>
 					<div class="modal-footer">

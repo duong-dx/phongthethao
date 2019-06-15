@@ -33,8 +33,6 @@ $(function(){
             columns:[
                 { data: 'product_name', name: 'product_name' },
                 { data: 'thumbnail', name: 'thumbnail' },
-                { data: 'memory', name: 'memory' },
-                { data: 'color_name', name: 'color_name' },
                 { data: 'sale_price', name: 'sale_price' },
                 { data: 'quantity_buy', name: 'quantity_buy' },
                 { data: 'total', name: 'total' }
@@ -136,9 +134,8 @@ $(function(){
                 $('#tbody-bill-table').append(
                     `<tr>
                         <td> <span style="margin: 2%;" >`+value.product_name+`</span></td>
-                        <td> <span style="margin: 2%;" >`+value.memory+`</span></td>
-                        <td> <span style="margin: 2%;" >`+value.color_name+`</span></td>
                         <td> <span style="margin: 2%;" >`+addCommas(value.sale_price)+`</span>VNĐ</td>
+                        <td> <span style="margin: 2%;" > Giảm giá: `+addCommas(value.sale)+`</span> %</td>
                         <td> <span style="margin: 2%;" >`+value.quantity_buy+`</td>
                         <td> <span style="margin: 2%;" >`+addCommas(value.total)+`</span>VNĐ</td>
                                             

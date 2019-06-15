@@ -12,6 +12,7 @@ use App\Branch;
 use App\DetailProduct;
 use App\DetailOrder;
 use App\Memory;
+use App\Review;
 use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -140,8 +141,18 @@ class ProductController extends Controller
     public function destroy($id)
     {
         
+        $exists = DetailOrder::where('product_id',$id)->first();
+  
+        if($exists!=null){
+            return response()->json([
+                'error'=>true,
+                'message'=>'Không thể xóa vì hiện tại sản phẩm đang được order !',
+            ]);
+        }
         Product::find($id)->delete();
         Image::where('product_id',$id)->delete();
+        Review::where('product_id',$id)->delete();
+
         
     }
 
@@ -216,7 +227,7 @@ class ProductController extends Controller
 
         return datatables()->of($products)
        ->editColumn('choose',function($products){
-                    return ' <button type="button" title="Danh sách chi tiết dản phẩm" class="btn btn-default btn-add_to_cart" data-id="'.$products->id.'"><i class="fas fa-list-ol"></i></button>';
+                    return ' <button type="button" title="Thêm vào giỏ hàng" class="btn btn-info btn-add_to_cart" data-id="'.$products->id.'"><i class="fas fa-cart-plus"></i></button>';
          })
         ->editColumn('thumbnail',function($products){
                 return '<img style="margin:auto; width:60px; height:60px;" src="/storage/'.$products->thumbnail->thumbnail.'">';

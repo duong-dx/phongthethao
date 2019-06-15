@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Status;
+use App\Order;
 use Illuminate\Http\Request;
 use App\Http\Requests\StatusStoreRequest;
 use App\Http\Requests\StatusUpdateRequest;
@@ -86,6 +87,15 @@ class StatusController extends Controller
      */
     public function destroy($id)
     {
+        $status = Status::find($id);
+        $check = Order::where('status',$status->code)->first();
+        if($check!=null){
+            return response()->json([
+                'error'=>true,
+                'message'=>'Không thể xóa vì có giàng buộc !',
+            ]);
+        }
+
         Status::find($id)->delete();
     }
     public function getStatuses()

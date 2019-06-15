@@ -14,6 +14,7 @@ use App\Validations\Validation;
 use Illuminate\Support\Facades\DB;
 use Cart;
 use Mail;
+use Auth;
 class OrderController extends Controller
 {
     /**
@@ -105,16 +106,16 @@ class OrderController extends Controller
             ->select('detail_orders.*')
             ->where('orders.status', '!=', 3)
             ->where('orders.status', '!=', 4)
-            ->where('detail_orders.detail_product_id',$cart->id)
+            ->where('detail_orders.product_id',$cart->id)
             ->get();
             
             foreach ($detail_orders as $key => $detail_order) {
                 $sum +=$detail_order->quantity_buy;
             }
-            $detail_product=DetailProduct::find($cart->id);
-            if(($cart->qty+$sum)>$detail_product->quantity){
+            $product=Product::find($cart->id);
+            if(($cart->qty+$sum)>$product->quantity){
                 $row=array();
-                $row['quantity']=($detail_product->quantity-$sum);
+                $row['quantity']=($product->quantity-$sum);
                 $row['cart_name']=$cart->name;
                 $row['cart_id']=$cart->id;
                 $message2s[]=$row;
@@ -131,11 +132,11 @@ class OrderController extends Controller
         $order->customer_mobile=$request->customer_mobile;
         $order->customer_id=$request->customer_id;
         $order->customer_email=$request->customer_email;
-        $order->user_id=$request->user_id;
+        $order->user_id=Auth::guard()->user()->id;
         $order->save();
          foreach ($carts as $key => $cart) {
              $detail_order = new DetailOrder;
-             $detail_order->detail_product_id= $cart->id;
+             $detail_order->product_id= $cart->id;
              $detail_order->order_id= $order->id;
              $detail_order->sale_price= $cart->price;
              $detail_order->quantity_buy= $cart->qty;
@@ -216,15 +217,12 @@ class OrderController extends Controller
             $detail_orders=DetailOrder::where('order_id',$id)->get();
 
             foreach ($detail_orders as $key => $detail_order) {
-                // lấy ra sản detail_product trừ số lượng
-                $detail_product = DetailProduct::find($detail_order->detail_product_id);
-                $detail_product->quantity= ($detail_product->quantity-$detail_order->quantity_buy);
-                $detail_product->save();
-
-                // lấy ra product tăng số lượng
-                $product= Product::find($detail_product->product_id);
+                // lấy ra sản product trừ số lượng
+                $product = Product::find($detail_order->product_id);
+                $product->quantity= ($product->quantity-$detail_order->quantity_buy);
                 $product->quantity_sold= ($product->quantity_sold+$detail_order->quantity_buy);
                 $product->save();
+                // tăng số lượng mua
             }
 
             
@@ -298,12 +296,9 @@ class OrderController extends Controller
         // get detail
         $detail_order = DB::table('detail_orders as do')
         ->join('orders as o', 'o.id', '=', 'do.order_id')
-        ->join('detail_products as dp', 'dp.id', '=', 'do.detail_product_id')
-        ->join('memories as m', 'm.id', '=', 'dp.memory')
-        ->join('colors as c', 'c.id', '=', 'dp.color_id')
-        ->join('products as p', 'p.id', '=', 'dp.product_id')
+        ->join('products as p', 'p.id', '=', 'do.product_id')
         ->join('statuses as st', 'st.code', '=', 'o.status')
-        ->select('do.*', 'o.*','p.name as product_name', 'p.id as product_id', 'm.name as memory', 'c.name as color_name')
+        ->select('do.*', 'o.*','p.name as product_name', 'p.id as product_id', 'p.sale as sale')
         ->where('o.id', $id)
         ->get();
         return response()->json(['detail_order'=>$detail_order, 'order'=>$order]);
