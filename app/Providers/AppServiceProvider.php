@@ -22,14 +22,14 @@ class AppServiceProvider extends ServiceProvider
         // ->join('categories as c', 'c.id', '=', 'p.category_id')
         // ->select('p.*', 'b.name as brand_name' , 'c.name as category_name')
         // ->get();
-        // $categories = Category::all();
+        $categories = Category::all();
 
         // foreach ($products as $key => $value) {
         //      $value->thumbnail = DB::table('images')->where('product_id',$value->id)->first();
              
         // }
         
-        // View::share(['categories'=>$categories, 'products'=>$products]);
+        View::share(['categories'=>$categories ]);
     }
 
     /**

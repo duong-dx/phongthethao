@@ -7,13 +7,12 @@ use App\User;
 use App\Category;
 use App\Brand;
 use App\Image;
-use App\Color;
 use App\Branch;
-use App\DetailProduct;
 use App\DetailOrder;
-use App\Memory;
+use App\Order;
 use App\Review;
 use Auth;
+use Cart;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\ProductStoreRequest;
@@ -39,10 +38,8 @@ class ProductController extends Controller
         $users = User::get();
          $categories = Category::get();
          $brands = Brand::get();
-         $colors = Color::get();
          $branches = Branch::get();
-         $memories = Memory::get();
-        return view('product.index',['users'=>$users,'categories'=>$categories,'brands'=>$brands, 'colors'=>$colors,'branches'=>$branches, 'memories'=>$memories]);
+        return view('product.index',['users'=>$users,'categories'=>$categories,'brands'=>$brands, 'branches'=>$branches]);
     }
 
     /**
@@ -241,6 +238,91 @@ class ProductController extends Controller
         ->rawColumns(['brand_id','category_id','choose', 'thumbnail'])
         ->toJson();
 
+    }
+    // xem chi tiết sản phẩm và truyền vào slug
+    public function detailProductSlug($slug)
+    {
+        $product = Product::join('brands', 'brands.id', '=', 'products.brand_id')
+        ->select('products.*', 'brands.name as brand_name', 'brands.origin as origin')
+        ->where('products.slug',$slug)->get()->first();
+
+
+        $product->images = DB::table('images')->where('product_id',$product->id)->get();
+        // $product->image_first = DB::table('images')->where('product_id',$product->id)->get()->first()->thumbnail;
+        // lấy ra danh sahcs review cho sản phẩm này
+        $product->reviews = DB::table('reviews')->where('product_id',$product->id)->get();
+
+        //  lấy ra danh sách sản phẩm cùng thể loại
+        $product_categories = DB::table('brands as b')
+        ->join('products as p','p.brand_id','=','b.id')
+        ->join('categories as c', 'c.id', '=', 'p.category_id')
+        ->select('p.*', 'b.name as brand_name' , 'c.name as category_name')
+        ->where('p.category_id',$product->category_id)
+        ->get();
+        
+        foreach ($product_categories as $key => $value) {
+             $value->thumbnail = DB::table('images')->where('product_id',$value->id)->first();
+        }
+        
+        // lấy ra số lượng trừ đi sản phẩm đã order và sản phẩm đã được trong giỏ hàng
+        //check số lượng trừ đi số lượng đang order
+            $sum=0;
+         $detail_orders= Order::join('detail_orders', 'orders.id', '=', 'detail_orders.order_id')
+            ->select('detail_orders.*')
+           ->where('orders.status', '!=', 3)
+            ->where('orders.status', '!=', 4)
+            ->where('detail_orders.product_id',$product->id)
+            ->get();
+            
+            foreach ($detail_orders as $key => $detail_order) {
+                $sum +=$detail_order->quantity_buy;
+            }
+
+            //check số lượng khách hàng đã thêm vào giỏ hàng là bao nhiêu 
+            $carts =Cart::instance('shopping')->content();
+            $sum2=0;
+            foreach ($carts as $key => $cart) {
+               if($cart->id== $product->id){
+                    $sum2+= $cart->qty;  
+                }
+            }
+            
+    // trừ đi số lượng đã được order VÀ SỐ Lượng đã thêm vào giỏ hàng
+         $product->quantity= ($product->quantity-$sum-$sum2);
+        return view('shop.detailproduct',['product'=>$product,'product_categories'=>$product_categories]);
+    }
+    //  đây là ddeer đổ lên trang cho người dùng toàn bộ những sản phẩm
+    public function productList()
+    {
+         $products = DB::table('brands as b')
+        ->join('products as p','p.brand_id','=','b.id')
+        ->join('categories as c', 'c.id', '=', 'p.category_id')
+        ->select('p.*', 'b.name as brand_name' , 'c.name as category_name')
+        ->paginate(9);
+        foreach ($products as $key => $value) {
+
+             $value->thumbnail = DB::table('images')->where('product_id',$value->id)->first();
+        }
+        
+        // dd($products);
+        // 
+        return view('shop.product',['products'=>$products]);
+        
+    }
+    public function productCategory($slug){
+        $products = DB::table('brands as b')
+        ->join('products as p','p.brand_id','=','b.id')
+        ->join('categories as c', 'c.id', '=', 'p.category_id')
+        ->select('p.*', 'b.name as brand_name' , 'c.name as category_name')
+        ->where('c.slug', $slug)
+        ->paginate(9);
+        foreach ($products as $key => $value) {
+             $value->thumbnail = DB::table('images')->where('product_id',$value->id)->first();
+            
+        }
+        
+        // dd($products);
+         return view('shop.product_category',['products'=>$products]);
     }
 
 }

@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\DetailProduct;
 use App\Order;
 use Cart;
 use App\Product;

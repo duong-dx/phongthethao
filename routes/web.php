@@ -11,10 +11,7 @@
 |
 */
 
-Route::get('/', function () {
-     dd(Cart::instance('admin')->content());
- return view('shop.home');
-});
+Route::get('/', 'HomeController@index');
 
 Route::get('/categories/{slug}','ProductController@productCategory');
 Route::prefix('product')->group(function(){

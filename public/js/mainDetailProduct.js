@@ -7,48 +7,7 @@ $(function(){
     var memory;
     var slug;
     var quantity;
-	$(document).on('click','.btn_memory',function(){
-        $('.btn_memory').css('border','solid 1px black');
-        memory = $(this).data('id');
-        slug =$(this).data('url');
-        $(this).css('border','solid 1px red')
-        // alert(slug);
-         $('#select_color').children().remove();
-
-        $.ajax({
-            type:'get',
-            url:'/product/'+slug+'/'+memory,
-            success: function(reponse){
-                jQuery.each(reponse,function(key,value){
-                    $('#select_color').append(
-                            `<option value="`+value.color_id+`">`+value.color_name+`</option>`
-                    );
-                    if(key==0){
-                       $('#quantity_remaining').html(value.quantity); 
-                       $('#detail_product_id').val(value.id);
-                    }
-                })
-
-                $('#select_color').attr('disabled', false);
-            }
-        })
-    })
-
-    $('#select_color').change(function(){
-        // 
-        var color_id =$(this).val();
-        $.ajax({
-            type:'get',
-            url:'/product/'+slug+'/'+memory+'/'+color_id,
-            success: function(reponse){
-                 quantity= reponse.detail_product.quantity;
-                $('#detail_product_id').val(reponse.detail_product.id);
-                $('#quantity_remaining').html(reponse.detail_product.quantity);
-            }
-        })
-    })
-
-
+	
     // submit add to cart
     $('#form-add_to_cart').submit(function(e){
         e.preventDefault();

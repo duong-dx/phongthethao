@@ -132,18 +132,11 @@
 									</div>
 								</div>
 								<div style="text-align: center;" class="block2-txt p-t-20">
-									<a href="product-detail.html" class="block2-name dis-block s-text3 p-b-5">
+									<a href="javascript:;" class="block2-name dis-block s-text3 p-b-5">
 										{{ $product->name }}
 									</a>
-									@if($product->detail !=null)
-										<p class="block2-oldprice m-text7 p-r-5">
-											{{ number_format($product->detail->price) }} VNĐ
-										</p>
-
-										<p class="block2-newprice m-text8 p-r-5">
-											{{ number_format($product->detail->sale_price) }} VNĐ
-										</p>
-									@endif
+									<p style="color: red; text-decoration: line-through; margin-bottom:1%;">{{ number_format($product->price) }} VNĐ</p>
+								<p style="color: green; margin-bottom:3%;">{{ number_format($product->price -($product->price * $product->sale)/100) }} VNĐ</p>
 								</div>
 							</div>
 						</div>

@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Order;
 use App\DetailOrder;
-use App\DetailProduct;
 use App\Status;
 use App\Product;
 use Illuminate\Http\Request;
