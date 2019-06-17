@@ -17,10 +17,10 @@ $(function(){
             url:'/product/saleonline/'+rowId+'/edit',
             success: function(reponse){
                 $('#quantity_buy_update').val(reponse.cart.qty);
-                quantity=reponse.detail_product.quantity;
+                quantity=reponse.product.quantity;
                 $('#quantity_remaining_update').html(quantity);
                 $('#rowId').val(reponse.cart.rowId);
-                $('#detail_product_id_update').val(reponse.detail_product.id);
+                $('#product_id_update').val(reponse.product.id);
 
                 $('#quantity_buy_update').keyup(function(){
                     if($(this).val()>quantity){
@@ -51,6 +51,7 @@ $(function(){
                  toastr.success(reponse.messages); 
                  $('#modal-update_cart').modal('hide');
                  $('#quantity'+rowId).html(reponse.cart.qty);
+                 $('#cart-count').html(reponse.count);
                  $('#error_messages').children().remove();
                  $('.total-span').html(reponse.total)
                 }
@@ -85,7 +86,7 @@ $(function(){
                     $('.total-span').html(reponse.total)
                      toastr.success('Delete success!');
                     $('#tr'+id).remove();
-
+                    $('#cart-count').html(reponse.count);
                             
            
         }
@@ -125,7 +126,7 @@ $(function(){
                     $('.total-span').html(reponse.total)
                      toastr.success('Delete cart success!');
                     $('#tbody-cart').children().remove();
-                    
+                    $('#cart-count').html(reponse.count);
                             
            
         }

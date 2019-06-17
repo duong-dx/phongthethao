@@ -14,7 +14,7 @@
 					<div class="modal-body">
 						<div class="form-group">
 							<input type="hidden" readonly name="rowId" id="rowId">
-							<input type="hidden" readonly name="detail_product_id" id="detail_product_id_update">
+							<input type="hidden" readonly name="product_id" id="product_id_update">
 								<label for="">* Số lượng mua</label>
 								<input type="number"  class="form-control" name="quantity_buy" id="quantity_buy_update" placeholder="Cập nhật số lượng mua">
 								<span id="span_quantity_buy_update"></span>
@@ -44,26 +44,25 @@
 							<th class="column-1">Thumbnail</th>
 							<th class="column-3">Id</th>
 							<th class="column-2">Product</th>
-							<th class="column-3">Memory</th>
-							<th class="column-3">Color</th>
 							<th class="column-5">Price</th>
+							<th class="column-3">Sale</th>
 							<th class="column-3">Quantity</th>
 							<th class="column-2">Action</th>
 						</thead>
 						<tbody id="tbody-cart">
-						@foreach(Cart::instance('shopping')->content() as $cart)
+
+						@foreach($carts  as $cart)
 							<tr id="tr{{ $cart->rowId }}" class="table-row">
 								
 								<td class="column-1">
 									<div class="cart-img-product b-rad-4 o-f-hidden">
-										<img src="/storage/{{ $cart->options->thumbnail }}" alt="IMG-PRODUCT">
+										<img src="/storage/{{ $cart->options->thumbnail->thumbnail }}" alt="IMG-PRODUCT">
 									</div>
 								</td>
 								<td  class="column-3">{{ $cart->id }}</td>
 								<td class="column-2">{{ $cart->name }}</td>
-								<td class="column-3">{{ $cart->options->memory }}</td>
-								<td class="column-3">{{ $cart->options->color }}</td>
 								<td class="column-5">{{ number_format($cart->price) }}</td>
+								<td style="color: green;" class="column-3">Giảm giá: {{ $cart->options->sale }} %</td>
 								<td id="quantity{{ $cart->rowId }}" class="column-3">{{ $cart->qty }}</td>
 								<td class="column-2"> 
 									<a href="javascript:;" data-id="{{ $cart->rowId }}" title="Cập nhật số lượng" class="btn btn-warning btn-update_cart"><i class="far fa-edit"></i></a>

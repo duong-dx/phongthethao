@@ -20,15 +20,13 @@ Route::prefix('product')->group(function(){
       Route::delete('delete','SaleOnlineController@delete');
       Route::post('orderonline','OrderOnlineController@store');
 
-     Route::get('{slug}','ProductController@detailProductSlug');
+     Route::get('/search/{slug}','ProductController@detailProductSlug');
      
-     // lấy ra các chi tiết sản phẩm có slug và memory truyền vào
-     Route::get('{slug}/{memory}/{color_id}','DetailProductController@getDP');
-     Route::get('{slug}/{memory}','ProductController@getDetailProductSlugMemory');
+     
      Route::get('','ProductController@productList');
      
      Route::get('/test', function () {
-      return view('test');
+      dd($carts = Cart::instance('shopping')->content());
      });
 });
 

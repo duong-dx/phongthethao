@@ -31,7 +31,7 @@ class SaleRequest extends FormRequest
     public function messages()
     {
         return [
-            'product_id.required'=>'Vui lòng chọn memory and color !',
+            'product_id.required'=>'Vui lòng nhập id product !',
             'product_id.integer'=>'detail_product_id phải là số nguyên !',
             'product_id.exists'=>'Bản ghi không tồn tại !',
             'quantity_buy.required'=>'Vui lòng nhập số lượng mua !',

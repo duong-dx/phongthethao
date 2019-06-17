@@ -91,7 +91,7 @@
 			<div class="wrap_header">
 				<!-- Logo -->
 				<a href="/" class="logo">
-					<img src="{{ asset('master2/images/icons/logo.png') }}" alt="IMG-LOGO">
+					<img src="{{ asset('master2/images/icons/Untitled.png') }}" alt="IMG-LOGO">
 				</a>
 
 				<!-- Menu -->

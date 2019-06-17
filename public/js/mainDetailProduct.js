@@ -22,16 +22,17 @@ $(function(){
                 }
                 else{
                      toastr.success(reponse.messages)
-                     $('#modal-add_to_cart').modal('hide');
-                     $('#modal-detail_products').modal('show');
-                     $('#quantity_buy').val(''); 
-                     // swith arlert
-                     $('.btn-addcart-product-detail').each(function(){
-                        var nameProduct = $('.product-detail-name').html();
-                        $(this).on('click', function(){
-                            swal(nameProduct, "is added to wishlist !", "success");
-                        });
-                    });
+                     console.log(reponse);
+                     $('#quantity_remaining').html(reponse.product_quantity)
+                     
+                   
+                    //  // swith arlert
+                    //  $('.btn-addcart-product-detail').each(function(){
+                    //     var nameProduct = $('.product-detail-name').html();
+                    //     $(this).on('click', function(){
+                    //         swal(nameProduct, "is added to wishlist !", "success");
+                    //     });
+                    // });
                      $('#cart-count').html(reponse.count);
                 }
                 // console.log(reponse.name)

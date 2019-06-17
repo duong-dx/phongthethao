@@ -131,7 +131,7 @@
 
 									<div class="block2-btn-addcart w-size1 trans-0-4">
 										<!-- Button -->
-										<a href="/product/{{ $product->slug }}" class="flex-c-m size1 bg4 bo-rad-23 hov1 s-text1 trans-0-4">
+										<a href="/product/search/{{ $product->slug }}" class="flex-c-m size1 bg4 bo-rad-23 hov1 s-text1 trans-0-4">
 											Detail
 										</a>
 									</div>

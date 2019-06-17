@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\DetailProduct;
+use App\Product;
 use App\Order;
 use Cart;
 use Illuminate\Support\Facades\DB;
@@ -17,7 +17,8 @@ class SaleOnlineController extends Controller
      */
     public function index()
     {
-        return view('shop.cart');
+        $carts = Cart::instance('shopping')->content();
+        return view('shop.cart' , ['carts'=>$carts]);
     }
 
     /**
@@ -38,17 +39,14 @@ class SaleOnlineController extends Controller
      */
     public function store(SaleRequest $request)
     {
-        $detail_product = DB::table('branches as b')
-        ->join('detail_products as dp', 'dp.branch_id', '=', 'b.id')
-        ->join('colors as c', 'dp.color_id', '=', 'c.id')
-        ->join('products as p', 'dp.product_id', '=', 'p.id')
-        ->join('memories as m', 'm.id', '=', 'dp.memory')
-        ->where('dp.id', $request->detail_product_id)
-        ->select('dp.*', 'b.name as branch_name', 'c.name as color_name','p.name as product_name' ,'m.name as memory_name')
-         ->get()->first();
-        
-         
-         $detail_product->thumbnail = DB::table('images')->where('product_id',$detail_product->product_id)->first()->thumbnail;
+        $product = DB::table('brands as b')
+        ->join('products as p','p.brand_id','=','b.id')
+        ->join('categories as c', 'c.id', '=', 'p.category_id')
+        ->where('p.id',$request->product_id)
+        ->select('p.*', 'b.name as brand_name' , 'c.name as category_name')
+        ->first();
+       
+        $product->thumbnail = DB::table('images')->where('product_id', $product->id)->first();
        
         $carts =Cart::instance('shopping')->content();
        //check số lượng trừ đi số lượng đang order
@@ -57,7 +55,7 @@ class SaleOnlineController extends Controller
             ->select('detail_orders.*')
             ->where('orders.status', '!=', 3)
             ->where('orders.status', '!=', 4)
-            ->where('detail_orders.detail_product_id',$request->detail_product_id)
+            ->where('detail_orders.product_id',$request->product_id)
             ->get();
             
             foreach ($detail_orders as $key => $detail_order) {
@@ -65,31 +63,49 @@ class SaleOnlineController extends Controller
             }
 
 // check số lượng khi add mới
-        if($request->quantity_buy>($detail_product->quantity-$sum)){
-            return response()->json([
-                'error'=>true,
-                'messages'=>'Số lượng bạn cần mua lớn hơn số lượng cửa hàng hiện có !'
-            ]);
-        }
+            if($request->quantity_buy>($product->quantity-$sum)){
+                return response()->json([
+                    'error'=>true,
+                    'messages'=>'Số lượng bạn cần mua lớn hơn số lượng cửa hàng hiện có !'
+                ]);
+            }
 // check số lượng khi đã tồn tại thì tổng số lượng không được phép lớn hơn số lượng tỏng kho
-        foreach ($carts as $key => $cart) {
-           if($cart->id==$request->detail_product_id){
-                if(($cart->qty+$request->quantity_buy)>($detail_product->quantity-$sum)){
-                     return response()->json([
-                        'error'=>true,
-                        'messages'=>'Tổng số lượng bạn cần mua lớn hơn số lượng cửa hàng hiện có !'
-            ]);
-                }
+            $sum2=0;
+            foreach ($carts as $key => $cart) {
+             if($cart->id==$request->product_id){
+                $sum2 +=$cart->qty;
+                if(($cart->qty+$request->quantity_buy)>($product->quantity-$sum)){
+                   return response()->json([
+                    'error'=>true,
+                    'messages'=>'Tổng số lượng bạn cần mua lớn hơn số lượng cửa hàng hiện có !'
+                ]);
+               }
            }
+       }
+        if($product->thumbnail!=null){
+            Cart::instance('shopping')->add(['id' => $product->id, 'name' => $product->name, 'qty' => $request->quantity_buy, 'price' => ($product->price -($product->price*$product->sale)/100 ), 'options' => ['thumbnail'=>$product->thumbnail, 'price'=>$product->price, 'sale'=>$product->sale]]);
         }
-
-        
-        Cart::instance('shopping')->add(['id' => $detail_product->id, 'name' => $detail_product->product_name, 'qty' => $request->quantity_buy, 'price' => $detail_product->sale_price, 'options' => ['memory' => $detail_product->memory_name, 'color'=>$detail_product->color_name, 'thumbnail'=>$detail_product->thumbnail]]);
-        $count=Cart::instance('shopping')->count();
+        else{
+            Cart::instance('shopping')->add(['id' => $product->id, 'name' => $product->name, 'qty' => $request->quantity_buy, 'price' => ($product->price -($product->price*$product->sale)/100 ), 'options' => ['thumbnail'=>'default_image.png', 'price'=>$product->price, 'sale'=>$product->sale]]);
+        }
+        // lấy ra số lượng sau khi add
+         foreach ($carts as $key => $cart) {
+             if($cart->id==$request->product_id){
+                $sum2 =$cart->qty;
+               
+           }
+       }
+        $product_quantity = $product->quantity - $sum - $sum2;
+        $count = Cart::instance('shopping')->count();
+        $subtotal = Cart::instance('shopping')->subtotal();
         return response()->json([
                 'error'=>false,
                 'messages'=>'Add to cart success !',
                 'count'=>$count,
+                'subtotal'=>$subtotal,
+                'product_quantity'=>$product_quantity,
+                'sum'=>$sum,
+                'sum2'=>$sum2,
         ]);
         
     }
@@ -120,18 +136,18 @@ class SaleOnlineController extends Controller
             ->select('detail_orders.*')
             ->where('orders.status', '!=', 3)
             ->where('orders.status', '!=', 4)
-            ->where('detail_orders.detail_product_id',$cart->id)
+            ->where('detail_orders.product_id',$cart->id)
             ->get();
             
             foreach ($detail_orders as $key => $detail_order) {
                 $sum +=$detail_order->quantity_buy;
             }
 
-        $detail_product = DetailProduct::find($cart->id);
-        $detail_product->quantity= ($detail_product->quantity-$sum);
+        $product = Product::find($cart->id);
+        $product->quantity= ($product->quantity-$sum);
 
        
-        return response()->json(['cart'=>$cart, 'detail_product'=>$detail_product]);
+        return response()->json(['cart'=>$cart, 'product'=>$product]);
     }
 
     /**
@@ -143,7 +159,7 @@ class SaleOnlineController extends Controller
      */
     public function update(SaleRequest $request, $id)
     {
-         $detail_product= DetailProduct::find($request->detail_product_id);
+         $product= Product::find($request->product_id);
         $cart= Cart::instance('shopping')->get($id);
     //check số lượng trừ đi số lượng đang order ngoiaj trừ đã hủy vào đã thanh toán : thánh toán 3 và đã hủy là 4
          $sum=0;
@@ -151,14 +167,14 @@ class SaleOnlineController extends Controller
             ->select('detail_orders.*')
             ->where('orders.status', '!=', 3)
             ->where('orders.status', '!=', 4)
-            ->where('detail_orders.detail_product_id',$request->detail_product_id)
+            ->where('detail_orders.product_id',$request->product_id)
             ->get();
             
             foreach ($detail_orders as $key => $detail_order) {
                 $sum +=$detail_order->quantity_buy;
             }
 // check trừ đi số lượng đã order
-        if($request->quantity_buy>($detail_product->quantity-$sum)){
+        if($request->quantity_buy>($product->quantity-$sum)){
             return response()->json([
                 'error'=>true,
                 'messages'=>'Số lượng bạn cần mua lớn hơn số lượng cửa hàng hiện có !'
@@ -166,13 +182,15 @@ class SaleOnlineController extends Controller
         }
 
         Cart::instance('shopping')->update($id, $request->quantity_buy);
-        
+        $count = Cart::instance('shopping')->count();
+
         $new_cart= Cart::instance('shopping')->get($id);
         $total = Cart::instance('shopping')->subtotal();
         return response()->json([
                 'error'=>false,
                 'messages'=>'Update cart success !',
                 'cart'=>$new_cart,
+                'count'=>$count,
                 'total'=>$total,
         ]);
     }
@@ -187,13 +205,14 @@ class SaleOnlineController extends Controller
     {
         Cart::instance('shopping')->remove($id);
         $total = Cart::instance('shopping')->subtotal();
-        return response()->json(['total'=>$total]);
+        $count = Cart::instance('shopping')->count();
+        return response()->json(['total'=>$total, 'count'=>$count]);
     }
     public function delete()
     {
          Cart::instance('shopping')->destroy();
-         
+         $count = Cart::instance('shopping')->count();
         $total = Cart::instance('shopping')->subtotal();
-        return response()->json(['total'=>$total]);
+        return response()->json(['total'=>$total, 'count'=>$count]);
     }
 }
