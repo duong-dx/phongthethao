@@ -78,16 +78,16 @@ class OrderOnlineController extends Controller
             ->select('detail_orders.*')
             ->where('orders.status', '!=', 3)
             ->where('orders.status', '!=', 4)
-            ->where('detail_orders.detail_product_id',$cart->id)
+            ->where('detail_orders.product_id',$cart->id)
             ->get();
             
             foreach ($detail_orders as $key => $detail_order) {
                 $sum +=$detail_order->quantity_buy;
             }
-            $detail_product=DetailProduct::find($cart->id);
-            if(($cart->qty+$sum)>$detail_product->quantity){
+            $product=Product::find($cart->id);
+            if(($cart->qty+$sum)>$product->quantity){
                 $row=array();
-                $row['quantity']=($detail_product->quantity-$sum);
+                $row['quantity']=($product->quantity-$sum);
                 $row['cart_name']=$cart->name;
                 $row['cart_id']=$cart->id;
                 $message2s[]=$row;
@@ -110,7 +110,7 @@ class OrderOnlineController extends Controller
         $order->save();
          foreach ($carts as $key => $cart) {
              $detail_order = new DetailOrder;
-             $detail_order->detail_product_id= $cart->id;
+             $detail_order->product_id= $cart->id;
              $detail_order->order_id= $order->id;
              $detail_order->sale_price= $cart->price;
              $detail_order->quantity_buy= $cart->qty;
@@ -128,7 +128,8 @@ class OrderOnlineController extends Controller
         }
 
          Cart::instance('shopping')->destroy();
-         return $order;
+         $count = Cart::instance('shopping')->count();
+         return ['order'=>$order, 'count'=>$count];
 
     }
 }

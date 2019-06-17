@@ -83,9 +83,11 @@ class SaleOnlineController extends Controller
            }
        }
         if($product->thumbnail!=null){
-            Cart::instance('shopping')->add(['id' => $product->id, 'name' => $product->name, 'qty' => $request->quantity_buy, 'price' => ($product->price -($product->price*$product->sale)/100 ), 'options' => ['thumbnail'=>$product->thumbnail, 'price'=>$product->price, 'sale'=>$product->sale]]);
+            Cart::instance('shopping')->add(['id' => $product->id, 'name' => $product->name, 'qty' => $request->quantity_buy, 'price' => ($product->price -($product->price*$product->sale)/100 ), 'options' => ['thumbnail'=>$product->thumbnail->thumbnail, 'price'=>$product->price, 'sale'=>$product->sale]]);
         }
         else{
+           
+            
             Cart::instance('shopping')->add(['id' => $product->id, 'name' => $product->name, 'qty' => $request->quantity_buy, 'price' => ($product->price -($product->price*$product->sale)/100 ), 'options' => ['thumbnail'=>'default_image.png', 'price'=>$product->price, 'sale'=>$product->sale]]);
         }
         // lấy ra số lượng sau khi add

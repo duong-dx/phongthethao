@@ -122,9 +122,8 @@
 								<thead>
 									<tr>
 										<th>Product name</th>
-										<th>Memory</th>
-										<th>Color name</th>
 										<th>Price Sale</th>
+										<th>Sale</th>
 										<th>Quantity</th>
 									</tr>
 								</thead>

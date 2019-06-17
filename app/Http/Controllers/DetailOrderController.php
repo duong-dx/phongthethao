@@ -91,14 +91,20 @@ class DetailOrderController extends Controller
         ->where('o.id', $id)
         ->get();
         foreach ($detail_order as $key => $value) {
-            $value->thumbnail = DB::table('images')->where('product_id', $value->product_id)->first()->thumbnail;
+            $value->thumbnail = DB::table('images')->where('product_id', $value->product_id)->first();
         }
 
         // return datatbales
 
          return datatables()->of($detail_order)
          ->editColumn('thumbnail', function($detail_order){
-                 return '<img style="margin:auto; width:60px; height:60px;" src ="/storage/'.$detail_order->thumbnail.'">';
+            if ($detail_order->thumbnail!=null) {
+                return '<img style="margin:auto; width:60px; height:60px;" src ="/storage/'.$detail_order->thumbnail->thumbnail.'">';
+            }
+            else{
+                return '<img style="margin:auto; width:60px; height:60px;" src ="/storage/default_image.png">';
+            }
+                 
         })
          ->editColumn('sale_price', function($detail_order){
             return ''.number_format($detail_order->sale_price).' VNĐ';

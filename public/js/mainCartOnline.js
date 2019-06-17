@@ -169,6 +169,7 @@ $(function(){
                 else{
                     if(reponse.error_cart==true){
                         toastr.error(reponse.message);
+
                     }
                     else{
                         if(reponse.error_quantity==true){
@@ -183,6 +184,7 @@ $(function(){
                     }
                     else{
                          toastr.success('Order success !');
+                         $('#cart-count').html(reponse.count);
                          $('#customer_name').val('')
                          $('#customer_address').val('')
                          $('#customer_mobile').val('')

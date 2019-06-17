@@ -1,4 +1,15 @@
 @extends('layouts.master2')
+<style>
+	.card-inner{
+    margin-left: 4rem;
+
+}
+.avatar{
+    	width: 60px;
+    	height: 60px;
+    	border-radius: 50%;
+    }
+</style>
 @section('content')
 
 	<!-- breadcrumb -->
@@ -154,6 +165,8 @@
 
 		</div>
 	</section>
+	
+	
 @endsection
 @section('js')
 	<script type="text/javascript" src="{{ asset('/js/mainDetailProduct.js') }}"></script>

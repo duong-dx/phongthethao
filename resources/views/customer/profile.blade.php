@@ -74,9 +74,10 @@
 							<th >Thumbnail</th>
 							
 							<th>Product</th>
-							<th>Memory</th>
-							<th>Color</th>
-							<th>Price</th>
+
+							<th>Sale Price</th>
+							<th>Sale</th>
+
 							<th>Quantity</th>
 							
 						</thead>
@@ -89,10 +90,10 @@
 										<img src="/storage/{{ $detail_order->thumbnail }}" alt="IMG-PRODUCT">
 									</div>
 								</td>
-								<td >{{ $detail_order->product_name }}</td>
-								<td >{{ $detail_order->memory }}</td>
-								<td >{{ $detail_order->color_name }}</td>
-								<td >{{ number_format($detail_order->sale_price) }}</td>
+								<td >{{ $detail_order->name }}</td>
+								
+								<td >{{ number_format($detail_order->price - ($detail_order->price * $detail_order->sale)/100) }} VNĐ</td>
+								<td> <p style="color: green;">Tiết kiệm: {{ $detail_order->sale }} %</p></td>
 								<td  >{{ $detail_order->quantity_buy }}</td>
 								
 							</tr>
@@ -106,9 +107,10 @@
 			</div>
 
 		</section>
-		<div class="pagination flex-m flex-w p-t-26">
+		<div style="clear: both;" ></div>
+		
 			{!! $orders->links() !!}
-		</div>
+		
 
 	</div>
 	<div style="clear: both;" ></div>
@@ -128,7 +130,7 @@
 									
 										<img class="thumbnail" style="margin: 5% 0% 5% 0% ; width: 100%; height: 100%; border-radius: 50%;" src="http://ssl.gstatic.com/accounts/ui/avatar_2x.png" class="avatar img-circle img-thumbnail" alt="avatar">
 									@else
-										<img class="thumbnail" style="margin: 5% 0% 5% 0% ; width: 100%; height: 100%; border-radius: 50%;" src="/storage/{{ Auth::guard('customer')->user()->thumbnail }}" alt="avatar">
+										<img class="thumbnail avatar" style="margin: 5% 0% 5% 0% ; width: 100%; height: 100%; border-radius: 50%;" src="/storage/{{ Auth::guard('customer')->user()->thumbnail }}" alt="avatar">
 									@endif
 									
 								</div>

@@ -63,6 +63,9 @@ Route::prefix('admin')->group(function(){
                  // statuses
                Route::resource('statuses','StatusController');
                Route::get('getStatuses','StatusController@getStatuses')->name('getStatuses');
+
+               // thống kê sơ bộ 
+          Route::get('statistical','StatisticalController@index');
           });
 
 
@@ -185,8 +188,7 @@ Route::prefix('admin')->group(function(){
 
           });
 
-          // thống kê sơ bộ 
-          Route::get('statistical','StatisticalController@index');
+          
           
      });
 });
@@ -216,7 +218,7 @@ Route::prefix('customer')->group(function(){
      // Route::get('login/google', 'CustomerAuth\SocialiteController@redirectToProviderGoogle');
      // Route::get('login/google/callback', 'CustomerAuth\SocialiteController@handleProviderCallbackGoogle');
 
-
+     
      Route::middleware('customer.auth')->group(function(){
                Route::get('/test', function () {
                     return view('customer_auth.test');
@@ -224,5 +226,6 @@ Route::prefix('customer')->group(function(){
                Route::get('profile/{id}','CustomerController@profile')->name('profile');
 
                Route::put('customers/{id}','CustomerController@updateProfile');
+
      });
 });

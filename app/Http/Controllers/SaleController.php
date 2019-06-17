@@ -81,10 +81,11 @@ class SaleController extends Controller
         }
 
         if($product->thumbnail!=null){
-            Cart::instance('admin')->add(['id' => $product->id, 'name' => $product->name, 'qty' => $request->quantity_buy, 'price' => ($product->price -($product->price*$product->sale)/100 ), 'options' => ['thumbnail'=>$product->thumbnail, 'price'=>$product->price, 'sale'=>$product->sale]]);
+            Cart::instance('admin')->add(['id' => $product->id, 'name' => $product->name, 'qty' => $request->quantity_buy, 'price' => ($product->price -($product->price*$product->sale)/100 ), 'options' => ['thumbnail'=>$product->thumbnail->thumbnail, 'price'=>$product->price, 'sale'=>$product->sale]]);
         }
         else{
-            Cart::instance('admin')->add(['id' => $product->id, 'name' => $product->name, 'qty' => $request->quantity_buy, 'price' => ($product->price -($product->price*$product->sale)/100 ), 'options' => ['thumbnail'=>'default_image.png', 'price'=>$product->price, 'sale'=>$product->sale]]);
+         
+            Cart::instance('admin')->add(['id' => $product->id, 'name' => $product->name, 'qty' => $request->quantity_buy, 'price' => ($product->price -($product->price*$product->sale)/100 ), 'options' => ['thumbnail'=> 'default_image.png', 'price'=>$product->price, 'sale'=>$product->sale]]);
         }
         
         $count = Cart::instance('admin')->count();
@@ -233,7 +234,7 @@ class SaleController extends Controller
     public function getCart()
     {
         $cart= Cart::instance('admin')->content();
-        
+        // dd($cart);
         // return view('sale.cart');
         return datatables()->of($cart)
        ->addColumn('action',function($cart){
@@ -257,7 +258,7 @@ class SaleController extends Controller
                 return '<p style="color:green">Giảm giá: '.$cart->options->sale.' %</p>';
                 })
         ->editColumn('thumbnail',function($cart){
-                return '<img style="margin:auto; width:60px; height:60px;" src ="/storage/'.$cart->options->thumbnail->thumbnail.'">';
+                return '<img style="margin:auto; width:60px; height:60px;" src ="/storage/'.$cart->options->thumbnail.'">';
                 })
         ->rawColumns(['action','product_name', 'sale_price', 'quantity_buy', 'thumbnail', 'sale'])
         ->toJson();

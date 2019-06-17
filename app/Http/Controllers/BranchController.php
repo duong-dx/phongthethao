@@ -140,26 +140,23 @@ class BranchController extends Controller
     }
     public function getProductInBranch($id)
     {
-         $detail_products = DB::table('branches as b')
-        ->join('detail_products as dp', 'dp.branch_id', '=', 'b.id')
-        ->join('colors as c', 'dp.color_id', '=', 'c.id')
-        ->join('products as p', 'dp.product_id', '=', 'p.id')
-        ->join('memories as m', 'm.id', '=', 'dp.memory')
-        ->where('dp.branch_id', $id)
-        ->select('dp.*', 'b.name as branch_name', 'c.name as color_name','p.name as product_name' ,'m.name as memory')
+         $products = DB::table('branches as b')
+        ->join('products as p', 'p.branch_id', '=', 'b.id')
+        ->where('b.id', $id)
+        ->select('p.*', 'b.name as branch_name')
         ->get();
 
-         return datatables()->of($detail_products)
-             ->editColumn('product_name',function($detail_products){
-                return ''.$detail_products->product_name.'';
+         return datatables()->of($products)
+             ->editColumn('product_name',function($products){
+                return ''.$products->name.'';
                 })
-             ->editColumn('color_name',function($detail_products){
-                return ''.$detail_products->color_name.'';
+             ->editColumn('sale',function($products){
+                return '<p style="color:green;">Giảm giá : '.$products->sale.' %</p>';
                 })
-             ->editColumn('sale_price',function($detail_products){
-                return ''.number_format($detail_products->sale_price).'';
+             ->editColumn('sale_price',function($products){
+                return ''.number_format($products->price-($products->price*$products->sale)/100).' VNĐ';
                 })
-            ->rawColumns(['product_name', 'color_name'])
+            ->rawColumns(['product_name', 'sale' ,'sale_price'])
             ->toJson();
             
         

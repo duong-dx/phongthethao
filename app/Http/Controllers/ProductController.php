@@ -227,8 +227,15 @@ class ProductController extends Controller
                     return ' <button type="button" title="Thêm vào giỏ hàng" class="btn btn-info btn-add_to_cart" data-id="'.$products->id.'"><i class="fas fa-cart-plus"></i></button>';
          })
         ->editColumn('thumbnail',function($products){
-                return '<img style="margin:auto; width:60px; height:60px;" src="/storage/'.$products->thumbnail->thumbnail.'">';
-                })
+            if($products->thumbnail!=null){
+               return '<img style="margin:auto; width:60px; height:60px;" src="/storage/'.$products->thumbnail->thumbnail.'">';
+
+           }
+           else{
+               return '<img style="margin:auto; width:60px; height:60px;" src="/storage/default_image.png">';
+               
+           }
+        }) 
         ->editColumn('brand_id',function($products){
                 return ''.$products->brand_name.'';
                 })

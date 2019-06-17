@@ -147,9 +147,8 @@ $(function(){
         ajax:'/admin/getProductInBranch/'+id,
         columns:[
             { data: 'product_name', name: 'product_name' },
-            { data: 'memory', name: 'memory' },
-            { data: 'color_name', name: 'color_name' },
             { data: 'sale_price', name: 'sale_price' },
+            { data: 'sale', name: 'sale' },
             { data: 'quantity', name: 'quantity' },
         ]
     });

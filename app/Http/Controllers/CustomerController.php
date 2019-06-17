@@ -177,17 +177,21 @@ class CustomerController extends Controller
         foreach ($orders as $key => $value) {
             $value->detail_orders = DB::table('detail_orders as do')
             ->join('orders as o', 'o.id', '=', 'do.order_id')
-            ->join('detail_products as dp', 'dp.id', '=', 'do.detail_product_id')
-            ->join('memories as m', 'm.id', '=', 'dp.memory')
-            ->join('colors as c', 'c.id', '=', 'dp.color_id')
-            ->join('products as p', 'p.id', '=', 'dp.product_id')
+            ->join('products as p', 'p.id', '=', 'do.product_id')
             ->join('statuses as st', 'st.code', '=', 'o.status')
-          ->select('do.*','p.name as product_name', 'p.id as product_id', 'm.name as memory', 'c.name as color_name')
+          ->select('p.*', 'do.quantity_buy as quantity_buy' )
             ->where('o.id', $value->id)->get();
 
             foreach ($value->detail_orders as $key => $detail_order) {
-                 $detail_order->thumbnail =DB::table('images')
-                 ->where('product_id', $detail_order->product_id)->first()->thumbnail;
+                 $thumbnail =DB::table('images')
+                 ->where('product_id', $detail_order->id)->first();
+                 if ($thumbnail!=null) {
+                     $detail_order->thumbnail =$thumbnail->thumbnail;
+                 }
+                 else{
+                    $detail_order->thumbnail = 'default_image.png';
+                 }
+                 
             }
         }
        return view('customer.profile',['orders'=>$orders]);

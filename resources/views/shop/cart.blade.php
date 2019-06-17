@@ -56,7 +56,7 @@
 								
 								<td class="column-1">
 									<div class="cart-img-product b-rad-4 o-f-hidden">
-										<img src="/storage/{{ $cart->options->thumbnail->thumbnail }}" alt="IMG-PRODUCT">
+										<img src="/storage/{{ $cart->options->thumbnail }}" alt="IMG-PRODUCT">
 									</div>
 								</td>
 								<td  class="column-3">{{ $cart->id }}</td>
