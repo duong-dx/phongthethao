@@ -8,6 +8,7 @@ use App\Role;
 use App\RoleUser;
 use App\Product;
 use Auth;
+use Illuminate\Support\Facades\DB;
 use App\Http\Requests\UserStoreRequest;
 use App\Http\Requests\UserUpdateRequest;
 use App\Http\Requests\RoleUserRequest;
@@ -192,5 +193,26 @@ class UserController extends Controller
         $role_user->role_id= $request->role_id;
         $role_user->save();
         return $role_user;
+    }
+    public function getUserStatistical()
+    {
+        $users = User::orderBy('id', 'asc')->get();
+        return datatables()->of($users)->addColumn('action',function( $users){
+            $data='';
+          
+                $data.='<button  type="button" title="Xem danh sách sản phẩm nhân viên đã bán" class="btn btn-success btn-view" data-id="'.$users->id.'"><i class="fas fa-id-card-alt"></i></button>';
+           
+            
+            return $data;
+            
+        })
+        ->editColumn('thumbnail',function($users){
+        return '<img style="margin:auto; width:60px; height:60px;" src ="/storage/'.$users->thumbnail.'">';
+        })
+        ->editColumn('mobile',function($users){
+            return  '<a href="tel:'.$users->mobile.'" ><i class="fas fa-phone-square"></i> &nbsp'.$users->mobile.'</a>';
+        })
+        ->rawColumns(['action','thumbnail','mobile'])
+        ->toJson();
     }
 }

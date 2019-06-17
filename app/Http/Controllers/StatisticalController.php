@@ -11,7 +11,8 @@ use DB;
 
 class StatisticalController extends Controller
 {
-    public function index(){
+    public function index()
+    {
     	$customer_count = Customer::all()->count();
     	$user_count = User::all()->count();
     	$product_count = Product::all()->count();
@@ -20,5 +21,14 @@ class StatisticalController extends Controller
     	$order_canceled_count= Order::where('status',4)->count();
     	
     	return view('statistical.index',['customer_count'=>$customer_count, 'user_count'=>$user_count, 'product_count'=>$product_count, 'order_confirm_count'=>$order_confirm_count, 'order_canceled_count'=>$order_canceled_count, 'order_paid_count'=>$order_paid_count]);
+    }
+    public function listProduct()
+    {
+        return view('statistical.product_statistical');
+    }
+
+    public function listUser()
+    {
+        return view('statistical.user');
     }
 }

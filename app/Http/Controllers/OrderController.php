@@ -302,4 +302,53 @@ class OrderController extends Controller
         ->get();
         return response()->json(['detail_order'=>$detail_order, 'order'=>$order]);
     }
+    public function getOrderProduct($id)
+    {
+       $detail_orders = DB::table('detail_orders as do')
+        ->join('orders as o', 'o.id', '=', 'do.order_id')
+        ->join('products as p', 'p.id', '=', 'do.product_id')
+        ->select('do.*','o.status as status','p.name as product_name', 'p.id as product_id', 'p.sale as sale')
+        ->where('p.id', $id)
+        ->where('o.status', 3)
+        ->orderBy('do.id', 'desc')->get();
+        
+        return datatables()->of($detail_orders)->addColumn('sale_price', function($detail_orders){
+          return ''.number_format($detail_orders->sale_price).' VNĐ';
+               
+           
+        })
+       ->editColumn('total', function($detail_orders){
+                 return ''.number_format($detail_orders->total).' VNĐ';
+           
+       
+       })
+       
+        ->rawColumns(['total', 'sale_price'])
+        ->toJson();
+    }
+    public function getOrderUser($id)
+    {
+        $detail_orders = DB::table('detail_orders as do')
+        ->join('orders as o', 'o.id', '=', 'do.order_id')
+        ->join('users as u', 'u.id', '=', 'o.user_id')
+        ->join('products as p', 'p.id', '=', 'do.product_id')
+        ->select('do.*','o.status as status','p.name as product_name', 'p.id as product_id', 'p.sale as sale')
+        ->where('u.id', $id)
+        ->where('o.status', 3)
+        ->orderBy('do.id', 'desc')->get();
+        
+        return datatables()->of($detail_orders)->addColumn('sale_price', function($detail_orders){
+          return ''.number_format($detail_orders->sale_price).' VNĐ';
+               
+           
+        })
+       ->editColumn('total', function($detail_orders){
+                 return ''.number_format($detail_orders->total).' VNĐ';
+           
+       
+       })
+       
+        ->rawColumns(['total', 'sale_price'])
+        ->toJson();
+    }
 }

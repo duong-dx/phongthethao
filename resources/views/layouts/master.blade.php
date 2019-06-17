@@ -114,8 +114,8 @@
                    <li><a><i class="fas fa-chart-line"></i>&nbsp&nbsp&nbsp Statistical <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
                       <li><a href="/admin/statistical">Thống kê sơ bộ</a></li>
-                      <li><a href="/admin/orders">Orders</a></li>
-                      <li><a href="/admin/statuses">Statuses</a></li>
+                      <li><a href="/admin/statistical/product">Thống kê theo sản phẩm</a></li>
+                      <li><a href="/admin/statistical/user">Thống kê theo nhân viên bán hàng</a></li>
                     </ul>
                    </li>
                    

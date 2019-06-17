@@ -332,4 +332,39 @@ class ProductController extends Controller
          return view('shop.product_category',['products'=>$products]);
     }
 
+    // lấy ra danh sách sản phẩm để có thể xem thống kê 
+    public function getProductStatistical()
+    {
+         $products = DB::table('brands as b')
+        ->join('products as p','p.brand_id','=','b.id')
+        ->join('categories as c', 'c.id', '=', 'p.category_id')
+        ->select('p.*', 'b.name as brand_name' , 'c.name as category_name')
+        ->get();
+        foreach ($products as $key => $product) {
+            $product->thumbnail = DB::table('images')->where('product_id', $product->id)->first();
+        }
+
+        return datatables()->of($products)
+       ->editColumn('choose',function($products){
+                    return ' <button type="button" title="Xem thống kê cho sản phẩm " class="btn btn-warning btn-view" data-id="'.$products->id.'"><i class="fas fa-chalkboard-teacher"></i></i></button>';
+         })
+        ->editColumn('thumbnail',function($products){
+            if($products->thumbnail!=null){
+               return '<img style="margin:auto; width:60px; height:60px;" src="/storage/'.$products->thumbnail->thumbnail.'">';
+
+           }
+           else{
+               return '<img style="margin:auto; width:60px; height:60px;" src="/storage/default_image.png">';
+               
+           }
+        }) 
+        ->editColumn('brand_id',function($products){
+                return ''.$products->brand_name.'';
+                })
+        ->editColumn('category_id',function($products){
+                return ''.$products->category_name.'';
+                })
+        ->rawColumns(['brand_id','category_id','choose', 'thumbnail'])
+        ->toJson();
+    }
 }

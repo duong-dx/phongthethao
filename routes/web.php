@@ -65,7 +65,22 @@ Route::prefix('admin')->group(function(){
                Route::get('getStatuses','StatusController@getStatuses')->name('getStatuses');
 
                // thống kê sơ bộ 
-          Route::get('statistical','StatisticalController@index');
+               Route::prefix('statistical')->group( function(){
+                    // route thống kê sơ bộ
+                    Route::get('','StatisticalController@index');
+                    //Route get thống kê theo sản phẩm
+                    Route::get('/product','StatisticalController@listProduct');
+                    Route::get('/getProductStatistical','ProductController@getProductStatistical');
+                    // LẤy ra danh sách đơn hàng chuyền vào product_id
+                    Route::get('product/{id}', 'OrderController@getOrderProduct');
+
+                    //Route get thống kê theo nhân viên
+                    Route::get('/user','StatisticalController@listUser');
+                    Route::get('/getUserStatistical','UserController@getUserStatistical');
+                    // LẤy ra danh sách đơn hàng chuyền vào product_id
+                    Route::get('user/{id}', 'OrderController@getOrderUser');
+               });
+          
           });
 
 
