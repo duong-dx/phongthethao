@@ -6,6 +6,7 @@ use App\Order;
 use App\DetailOrder;
 use App\Status;
 use App\Product;
+use App\Image;
 use Illuminate\Http\Request;
 use App\Http\Requests\OrderRequest;
 use App\Http\Requests\OrderUpdateRequest;
@@ -282,6 +283,9 @@ class OrderController extends Controller
            
        
        })
+       ->editColumn('id', function($orders){
+            return ''.$orders->code.'';
+       })
        ->editColumn('customer_mobile', function($orders){
             return '<a href="tel:'.$orders->customer_mobile.'" ><i class="fas fa-phone-square"></i> &nbsp'.$orders->customer_mobile.'</a>';
        })
@@ -350,5 +354,35 @@ class OrderController extends Controller
        
         ->rawColumns(['total', 'sale_price'])
         ->toJson();
+    }
+    public function getOrderStatus(Request $request)
+    {
+        $order = DB::table('orders as o')
+        ->join('statuses as s', 'o.status', '=', 's.code')
+        ->select('o.*', 's.name as status_name')
+        ->where('o.code', $request->code)
+        ->first();
+        $order->detail_orders = DB::table('detail_orders as do')
+        ->join('products as p', 'p.id', '=', 'do.product_id')
+        ->where('do.order_id', $order->id)
+        ->select('do.*', 'p.name as product_name', 'p.sale as product_sale')
+        ->get();
+        foreach ($order->detail_orders as $key => $value) {
+            $thumbnail = Image::where('product_id', $value->product_id)->first();
+            if ($thumbnail!=null) {
+                $value->thumbnail = $thumbnail->thumbnail;
+
+            }
+            else{
+                $value->thumbnail = 'default_image.png';
+            }
+            
+        }
+        $code = $request->code;
+        return view('shop.bill_code',['code'=>$code, 'order'=>$order]);
+    }
+    public function indexBillStatus()
+    {
+        return view('shop.bill_code');
     }
 }

@@ -5,9 +5,7 @@
 	<!-- Content page -->
 	<section class="bgwhite p-t-55 p-b-65">
 		<div class="container">
-			<div style="text-align: center; margin: 5% auto 5%;">
-						<h4>Giá cực sốc !!!! Lựa chọn ngay !</h4>
-					</div>
+			
 			<div class="row">
 				<div class="col-sm-6 col-md-4 col-lg-3 p-b-50">
 					<div class="leftbar p-r-20 p-r-0-sm">
@@ -104,11 +102,19 @@
 					</div>
 				</div>
 					
-				<div class="col-sm-6 col-md-8 col-lg-9 p-b-50">
+				<div style="text-align: center;" class="col-sm-6 col-md-8 col-lg-9 p-b-50">
 					<!--  -->
-					
+					@if(isset($category_name))
+					<div style="text-align: center; margin: 5% auto 5%;">
+						<h4>Kết quả cho loại sản phẩm : {{ $category_name }}</h4>
+					</div>
+					@endif
+					@if(isset($name_input))
+							<h4 style="margin-bottom: 5%;">Kết quả tìm thấy cho: {{ $name_input }}</h4>
+						@endif
 					<!-- Product -->
 					<div class="row">
+						
 						@foreach($products as $product)
 						@if($product->thumbnail!=null)
 							<div class="col-sm-12 col-md-6 col-lg-4 p-b-50">

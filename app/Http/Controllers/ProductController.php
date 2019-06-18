@@ -327,9 +327,9 @@ class ProductController extends Controller
              $value->thumbnail = DB::table('images')->where('product_id',$value->id)->first();
             
         }
-        
+        $category_name = Category::where('slug', $slug)->first()->name;
         // dd($products);
-         return view('shop.product_category',['products'=>$products]);
+         return view('shop.product_category',['products'=>$products, 'category_name'=>$category_name]);
     }
 
     // lấy ra danh sách sản phẩm để có thể xem thống kê 
@@ -366,5 +366,23 @@ class ProductController extends Controller
                 })
         ->rawColumns(['brand_id','category_id','choose', 'thumbnail'])
         ->toJson();
+    }
+
+    public function searchProduct(Request $request)
+    {
+        $products = DB::table('brands as b')
+        ->join('products as p','p.brand_id','=','b.id')
+        ->join('categories as c', 'c.id', '=', 'p.category_id')
+        ->select('p.*', 'b.name as brand_name' , 'c.name as category_name')
+        ->where('p.name', 'like', '%' .$request->name. '%')
+        ->paginate(9);
+        foreach ($products as $key => $value) {
+             $value->thumbnail = DB::table('images')->where('product_id',$value->id)->first();
+            
+        }
+        $name_input = $request->name;
+        
+        // dd($products);
+         return view('shop.product_category',['products'=>$products, 'name_input'=>$name_input]);
     }
 }

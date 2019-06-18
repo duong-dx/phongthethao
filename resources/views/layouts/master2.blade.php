@@ -44,7 +44,50 @@
 <section>
              @yield('css')
 </section>
-  </head>
+  <style>
+  	 .searchbar{
+    margin-bottom: auto;
+    margin-top: auto;
+    height: 40px;
+    background-color: #EEEEEE;
+    border-radius: 30px;
+    padding: 10px;
+    }
+
+    .search_input{
+    color: black;
+    border: 0;
+    outline: 0;
+    background: none;
+    width: 0;
+    caret-color:transparent;
+    line-height: 25px;
+    transition: width 0.4s linear;
+    }
+
+    .searchbar:hover > .search_input{
+    padding: 0 10px;
+    width: 100px;
+    caret-color:red;
+    transition: width 0.4s linear;
+    }
+
+    .searchbar:hover > .search_icon{
+    background: white;
+    color: #e74c3c;
+    }
+
+    .search_icon{
+    height: 25px;
+    width: 25px;
+    float: right;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    color:white;
+    }
+  </style>
 </head>
 <body class="animsition">
 
@@ -126,18 +169,22 @@
 									</a>
 								@endif
 							</li>
-
 							<li>
-								<a href="javascript:;">Blog</a>
+								<a href="/product/bill_status">Bill status</a>
+							</li>
+							<li>
+								<form id="search_product_name" method="post" action="/product/searchProduct">
+									@csrf
+								<div class="d-flex justify-content-center h-100">
+									<div class="searchbar">
+										<input class="search_input" type="text" name="name" placeholder="Nhập vào tên">
+										<button type="submit" class="search_icon"><i class="fas fa-search"></i></button> 
+									</div>
+								</div>
+								</form>
 							</li>
 
-							<li>
-								<a href="javascript:;">About</a>
-							</li>
-
-							<li>
-								<a href="javascript:;">Contact</a>
-							</li>
+							
 						</ul>
 					</nav>
 				</div>
@@ -627,6 +674,27 @@
 <!--===============================================================================================-->
 	<script src="{{ asset('master2/js/main.js')}}"></script>
 	<script src="{{ asset('//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js')}}"></script>
+	<script>
+		$.ajaxSetup({
+			headers: {
+				'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+			}
+		});
+		$(function(){
+			// $('#search_product_name').submit(function(event) {
+			// 	event.preventDefault();
+			// 	var data = $(this).serialize();
+			// 	console.log(data);
+			// 	$.ajax({
+			// 		type:'post',
+			// 		url:'product/searchProduct',
+			// 		data:data,
+
+			// 	})
+			// });
+		});
+		
+	</script>
 	<section>
              @yield('js')
     </section>

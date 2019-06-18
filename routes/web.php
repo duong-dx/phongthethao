@@ -21,10 +21,11 @@ Route::prefix('product')->group(function(){
       Route::post('orderonline','OrderOnlineController@store');
 
      Route::get('/search/{slug}','ProductController@detailProductSlug');
-     
+     Route::get('bill_status', 'OrderController@indexBillStatus');
+     Route::post('getOrderStatus','OrderController@getOrderStatus');
      
      Route::get('','ProductController@productList');
-     
+     Route::post('searchProduct','ProductController@searchProduct');
      Route::get('/test', function () {
       dd($carts = Cart::instance('shopping')->content());
      });
